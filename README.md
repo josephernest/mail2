@@ -6,7 +6,7 @@ mail2
       git clone https://github.com/josephernest/mail2.git
       cd mail2
       pip3 install dnspython cryptography
-      python3 server.py
+      python3 mail2.py
  
   and follow the instructions.
 
