@@ -237,7 +237,7 @@ class Server():
                     try:
                         server, _ = self.find_server(domain)
                     except:
-                        self.send_text_response(connection, f"ERROR, mail could not be delivered to {domain=}")
+                        self.send_text_response(connection, f"ERROR, mail not delivered, cannot deliver to {domain=}")
                         continue
                     print(f"Sending mail2 {_from=} {to=} {content=} using {server=}")
                     signature = sign(_from + to + content, self.private_key)
