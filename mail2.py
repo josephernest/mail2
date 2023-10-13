@@ -177,6 +177,7 @@ class Server():
 
     def find_server(self, domain):
         server = None
+        pubkey = None
         for r in dns.resolver.resolve(domain, 'TXT'):
             txt = r.to_text()
             txt = ''.join(re.findall('"(.*?)"', txt))  # there can be multiple strings, example: "abcd"  "efgh"
@@ -267,8 +268,11 @@ class Server():
                 else:
                     _from = data["from"]
                     from_domain = _from.split("@")[1]
-                    _, domain_pubkey = self.find_server(from_domain)
-                    pubkey = load_ssh_public_key(domain_pubkey.encode(), backend=default_backend())
+                    try:
+                        _, domain_pubkey = self.find_server(from_domain)
+                        pubkey = load_ssh_public_key(domain_pubkey.encode(), backend=default_backend())
+                    except:
+                        self.send_json_response(connection, {"status": "error", "message": "ERROR, cannot find pubkey of sender domain"})
                     content = data["content"]                    
                     msg = _from + _to + content
                     correctly_signed = verify(msg, data["signature"], pubkey)
