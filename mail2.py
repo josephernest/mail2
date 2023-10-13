@@ -253,7 +253,7 @@ class Server():
                             print(response["message"])
                             self.send_text_response(connection, "ERROR, mail not delivered, internal mail server error (ask administror?)")
                     except:
-                        self.send_text_response(connection, f"ERROR, mail could not be delivered to {server=}")
+                        self.send_text_response(connection, f"ERROR, mail not delivered, cannot deliver to {domain=}")
             elif data["action"] == "read":
                 if session:
                     L = list(self.db.db.execute("select * from mails where _to=?", (session, )))
