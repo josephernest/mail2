@@ -46,6 +46,18 @@ def encode_text_message(t):
     prefix = b"T" + len(t2).to_bytes(4, byteorder="big")
     return prefix + t2  
 
+def read_socket_response(s):
+    buf = s.recv(5)
+    data_type, data_size = buf[0:1], int.from_bytes(buf[1:], byteorder="big")
+    buf = s.recv(data_size)
+    if data_type == b"J":  # JSON            
+        data = json.loads(buf)
+    elif data_type == b"B":  # BINARY
+        data = buf
+    elif data_type == b"T":  # TEXT
+        data = buf.decode()
+    return data
+
 #####################################
 #### DB
 #####################################
@@ -103,16 +115,7 @@ class Client():
 
     @requires_connected
     def read_server_response(self):
-        buf = self.socket.recv(5)
-        data_type, data_size = buf[0:1], int.from_bytes(buf[1:], byteorder="big")
-        buf = self.socket.recv(data_size)
-        if data_type == b"J":  # JSON            
-            data = json.loads(buf)
-        elif data_type == b"B":  # BINARY
-            data = buf
-        elif data_type == b"T":  # TEXT
-            data = buf.decode()
-        return data
+        return read_socket_response(self.socket)
 
     @requires_connected
     def login(self, login, password):
@@ -238,6 +241,7 @@ class Server():
                         s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                         s2.connect((server, 555))
                         s2.send(encode_json_message({"action": "deliver", "from": session, "to": to, "content": content, "signature": signature}))
+                        print(read_socket_response(s2))
                         self.send_text_response(connection, "OK, mail sent")
                     except:
                         self.send_text_response(connection, f"ERROR, mail could not be delivered to {server=}")
