@@ -22,7 +22,7 @@ def generate_keys():
 
 def sign(message, private_key):
     padding_instance = padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH)
-    return base64.b64encode(private_key.sign(message.encode(), padding_instance, hashes.SHA256()))
+    return base64.b64encode(private_key.sign(message.encode(), padding_instance, hashes.SHA256())).decode()
 
 def verify(message, signature, public_key):
     sig = base64.b64decode(signature)
