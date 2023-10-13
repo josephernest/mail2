@@ -281,7 +281,7 @@ class Server():
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(('', 555))
         self.socket.listen(5)
-        print("server started, listening...")
+        print(f"server started for {self.server_domain}, listening...")
         while True:
             connection, address = self.socket.accept()
             threading.Thread(target=self.client_listener, args=(connection, address)).start()
