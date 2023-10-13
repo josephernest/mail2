@@ -233,10 +233,13 @@ class Server():
                     content = data["content"]
                     to = data["to"]
                     domain = to.split("@")[1]
-                    server, _ = self.find_server(domain)
+                    try:
+                        server, _ = self.find_server(domain)
+                    except:
+                        self.send_text_response(connection, f"ERROR, mail could not be delivered to {domain=}")
+                        continue
                     print(f"Sending mail2 {_from=} {to=} {content=} using {server=}")
                     signature = sign(_from + to + content, self.private_key)
-
                     try:
                         s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                         s2.connect((server, 555))
