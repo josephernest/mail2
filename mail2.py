@@ -163,7 +163,7 @@ class Server():
             exit()
             
         try:
-            self.private_key = load_pem_private_key(PRIVATE_KEY, None)
+            self.private_key = load_pem_private_key(PRIVATE_KEY, None, backend=default_backend())
         except:
             print("The PRIVATE_KEY from config.py could not be loaded.")
             generate_keys()
