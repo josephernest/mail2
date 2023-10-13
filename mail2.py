@@ -1,4 +1,4 @@
-import socket, threading, sqlite3, json, time, base64
+import socket, threading, sqlite3, json, time, base64, re
 import dns.resolver
 
 #####################################
@@ -176,8 +176,7 @@ class Server():
         server = None
         for r in dns.resolver.resolve(domain, 'TXT'):
             txt = r.to_text()
-            if txt[0] == '"':
-                txt = txt[1: -1]
+            txt = ''.join(re.findall('"(.*?)"', txt))  # there can be multiple strings, example: "abcd"  "efgh"
             if txt.startswith("mail2server:"):
                 server, pubkey = txt.split(";")
                 server, pubkey = server.split("mail2server:")[1], pubkey.split("mail2pubkey:")[1]
@@ -256,8 +255,8 @@ class Server():
                 else:
                     _from = data["from"]
                     from_domain = _from.split("@")[1]
-                    _, domain_pubkey = self.find_server(domain)
-                    pubkey = load_ssh_public_key(domain_pubkey)
+                    _, domain_pubkey = self.find_server(from_domain)
+                    pubkey = load_ssh_public_key(domain_pubkey.encode(), backend=default_backend())
                     correctly_signed = verify(msg, data["signature"], pubkey)
                     if correctly_signed:
                         content = data["content"]
