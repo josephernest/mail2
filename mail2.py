@@ -243,7 +243,11 @@ class Server():
                         s2.send(encode_json_message({"action": "deliver", "from": session, "to": to, "content": content, "signature": signature}))
                         response = read_socket_response(s2)
                         print(response)
-                        self.send_text_response(connection, response)
+                        if response["status"] == "ok":
+                            self.send_text_response(connection, "OK, mail delivered")
+                        else:
+                            print(response["message"])
+                            self.send_text_response(connection, "ERROR, mail not delivered, internal mail server error (ask administror?)")
                     except:
                         self.send_text_response(connection, f"ERROR, mail could not be delivered to {server=}")
             elif data["action"] == "read":
@@ -267,9 +271,9 @@ class Server():
                     correctly_signed = verify(msg, data["signature"], pubkey)
                     if correctly_signed:
                         self.db.add_mail(_from, _to, content)
-                        self.send_text_response(connection, "OK, mail delivered")
+                        self.send_json_response(connection, {"status": "ok", "message": "OK, mail delivered"})
                     else:
-                        self.send_text_response(connection, "ERROR, could not validate signature")
+                        self.send_json_response(connection, {"status": "error", "message": "ERROR, could not validate signature"})
             elif data["action"] == "adduser":
                 if session != self.admin_user["login"]:
                     self.send_text_response(connection, "ERROR, only admin can create a user")
