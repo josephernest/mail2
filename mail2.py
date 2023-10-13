@@ -273,6 +273,7 @@ class Server():
                         pubkey = load_ssh_public_key(domain_pubkey.encode(), backend=default_backend())
                     except:
                         self.send_json_response(connection, {"status": "error", "message": "ERROR, cannot find pubkey of sender domain"})
+                        continue
                     content = data["content"]                    
                     msg = _from + _to + content
                     correctly_signed = verify(msg, data["signature"], pubkey)
