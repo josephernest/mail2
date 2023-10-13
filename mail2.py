@@ -257,9 +257,10 @@ class Server():
                     from_domain = _from.split("@")[1]
                     _, domain_pubkey = self.find_server(from_domain)
                     pubkey = load_ssh_public_key(domain_pubkey.encode(), backend=default_backend())
+                    content = data["content"]                    
+                    msg = _from + _to + content
                     correctly_signed = verify(msg, data["signature"], pubkey)
                     if correctly_signed:
-                        content = data["content"]
                         self.db.add_mail(_from, _to, content)
                         self.send_text_response(connection, "OK, mail delivered")
                     else:
