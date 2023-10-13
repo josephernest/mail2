@@ -241,8 +241,9 @@ class Server():
                         s2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                         s2.connect((server, 555))
                         s2.send(encode_json_message({"action": "deliver", "from": session, "to": to, "content": content, "signature": signature}))
-                        print(read_socket_response(s2))
-                        self.send_text_response(connection, "OK, mail sent")
+                        response = read_socket_response(s2)
+                        print(response)
+                        self.send_text_response(connection, response)
                     except:
                         self.send_text_response(connection, f"ERROR, mail could not be delivered to {server=}")
             elif data["action"] == "read":
